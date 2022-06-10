@@ -25,8 +25,14 @@ import pandas as pd
 
 
 ```python
-label_df = pd.read_csv("container_throughput_label.csv")
-label_df.head()
+month_to_int = {'January':1, 'February':2, 'March':3, 'April':4, 'May':5, 
+'June':6, 'July':7, 'August':8, 'September':9, 'October':10, 'November':11, 'December':12}
+
+
+labels_df = pd.read_csv("container_throughput_label.csv")
+labels_df['month'] = labels_df['month'].map(lambda x: month_to_int[x])
+
+labels_df.head()
 
 ```
 
@@ -42,7 +48,7 @@ label_df.head()
     .dataframe tbody tr th {
         vertical-align: top;
     }
-    
+
     .dataframe thead th {
         text-align: right;
     }
@@ -60,38 +66,38 @@ label_df.head()
   <tbody>
     <tr>
       <th>0</th>
-      <td>2002</td>
-      <td>January</td>
-      <td>107493</td>
-      <td>96214</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>91751</td>
+      <td>82123</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>2002</td>
-      <td>February</td>
-      <td>97798</td>
-      <td>97257</td>
+      <td>2001</td>
+      <td>2</td>
+      <td>83475</td>
+      <td>83014</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>2002</td>
-      <td>March</td>
-      <td>111474</td>
-      <td>112393</td>
+      <td>2001</td>
+      <td>3</td>
+      <td>95149</td>
+      <td>95933</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2002</td>
-      <td>April</td>
-      <td>101110</td>
-      <td>107746</td>
+      <td>2001</td>
+      <td>4</td>
+      <td>86302</td>
+      <td>91967</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>2002</td>
-      <td>May</td>
-      <td>112976</td>
-      <td>119299</td>
+      <td>2001</td>
+      <td>5</td>
+      <td>96431</td>
+      <td>101828</td>
     </tr>
   </tbody>
 </table>
@@ -103,135 +109,14 @@ label_df.head()
 
 
 ```python
-exportval_df = pd.read_csv("export_value.csv")
-gdp_df = pd.read_csv("GDP_constant.csv")
-importval_df = pd.read_csv("import_value.csv")
-inflate_df = pd.read_csv("inflation_%.csv")
-interest_df = pd.read_csv("interest_rate.csv")
-manu_df = pd.read_csv("manufac_prod_index.csv")
-pop_df = pd.read_csv("population.csv")
-unemp_df = pd.read_csv("unemployment.csv")
-ex_df = pd.read_csv("usd_thb.csv")
-cons_df = pd.read_csv("consumer_price_index.csv")
-```
+features_df = pd.read_csv("features.csv")
+features_df = features_df.drop('id', axis=1)
 
 
-```python
-exportval_df = exportval_df.drop('id', axis=1)
+features_df['month'] = features_df['month'].map(lambda x: month_to_int[x])
+features_df = features_df.interpolate(axis=0)
 
-exportval_df = exportval_df[["year", "month", "export_value"]]
-exportval_df['export_value'] = exportval_df['export_value'].map(lambda x: x.replace(',', ''))
-exportval_df['export_value'] = pd.to_numeric(exportval_df['export_value'])
-```
-
-
-```python
-gdp_df = gdp_df.drop('id', axis=1)
-
-gdp_df = gdp_df[["year", "month", "GDP_constant"]]
-gdp_df['GDP_constant'] = gdp_df['GDP_constant'].map(lambda x: x.replace(',', ''))
-gdp_df['GDP_constant'] = pd.to_numeric(gdp_df['GDP_constant'])
-```
-
-
-```python
-importval_df = importval_df.drop('id', axis=1)
-
-importval_df = importval_df[["year", "month", "import_value"]]
-importval_df['import_value'] = importval_df['import_value'].map(lambda x: x.replace(',', ''))
-importval_df['import_value'] = pd.to_numeric(importval_df['import_value'])
-```
-
-
-```python
-inflate_df = inflate_df.drop('id', axis=1)
-
-inflate_df = inflate_df[["year", "month", "inflation_percentage_change"]]
-inflate_df['inflation_percentage_change'] = inflate_df['inflation_percentage_change'].map(lambda x: x.replace('%', ''))
-inflate_df['inflation_percentage_change'] = pd.to_numeric(inflate_df['inflation_percentage_change'])
-```
-
-
-```python
-interest_df = interest_df.drop('id', axis=1)
-
-interest_df = interest_df[["year", "month", "interest_rate"]]
-interest_df['interest_rate'] = pd.to_numeric(interest_df['interest_rate'])
-```
-
-
-```python
-manu_df = manu_df.drop('id', axis=1)
-
-manu_df = manu_df[["year", "month", "manufac_prod_index"]]
-manu_df['manufac_prod_index'] = pd.to_numeric(manu_df['manufac_prod_index'])
-```
-
-
-```python
-pop_df = pop_df.drop('id', axis=1)
-
-pop_df = pop_df[["year", "month", "population"]]
-pop_df['population'] = pop_df['population'].map(lambda x: x.replace(',', ''))
-pop_df['population'] = pd.to_numeric(pop_df['population'])
-```
-
-
-```python
-unemp_df = unemp_df.drop('id', axis=1)
-
-unemp_df = unemp_df[["year", "month", "unemployment_rate"]]
-unemp_df = unemp_df.replace(' n.a. ', np.nan)
-unemp_df['unemployment_rate'] = pd.to_numeric(unemp_df['unemployment_rate'])
-```
-
-
-```python
-ex_df = ex_df.drop('id', axis=1)
-
-ex_df = ex_df[["year", "month", "exchange_rate"]]
-ex_df = ex_df.replace(' n.a. ', np.nan)
-ex_df['exchange_rate'] = pd.to_numeric(ex_df['exchange_rate'])
-```
-
-
-```python
-cons_df = cons_df.drop('id', axis=1)
-
-cons_df = cons_df[["year", "month", "consumer_price_index"]]
-cons_df = cons_df.replace(' n.a. ', np.nan)
-cons_df['consumer_price_index'] = pd.to_numeric(cons_df['consumer_price_index'])
-```
-
-# Merge all Dataframe into one
-
-
-```python
-months = ['January', 'February', 'March', 'April', 'May', 
-'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-f_df = pd.DataFrame(data={'year': np.array([[year]*12 for year in range(2001,2022)]).flatten(),
-                        'month': months*21 })
-
-```
-
-
-```python
-f_df = pd.merge(left=f_df, right=exportval_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=gdp_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=importval_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=inflate_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=interest_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=manu_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=pop_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=unemp_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=ex_df, how='left', on=['year','month'])
-f_df = pd.merge(left=f_df, right=cons_df, how='left', on=['year','month'])
-```
-
-
-```python
-f_df.head()
+features_df.head()
 ```
 
 
@@ -246,7 +131,7 @@ f_df.head()
     .dataframe tbody tr th {
         vertical-align: top;
     }
-    
+
     .dataframe thead th {
         text-align: right;
     }
@@ -273,7 +158,7 @@ f_df.head()
     <tr>
       <th>0</th>
       <td>2001</td>
-      <td>January</td>
+      <td>1</td>
       <td>279973.0</td>
       <td>459359.0</td>
       <td>255061.0</td>
@@ -288,7 +173,7 @@ f_df.head()
     <tr>
       <th>1</th>
       <td>2001</td>
-      <td>February</td>
+      <td>2</td>
       <td>279973.0</td>
       <td>459359.0</td>
       <td>255061.0</td>
@@ -303,7 +188,7 @@ f_df.head()
     <tr>
       <th>2</th>
       <td>2001</td>
-      <td>March</td>
+      <td>3</td>
       <td>279973.0</td>
       <td>459359.0</td>
       <td>255061.0</td>
@@ -318,7 +203,7 @@ f_df.head()
     <tr>
       <th>3</th>
       <td>2001</td>
-      <td>April</td>
+      <td>4</td>
       <td>283056.0</td>
       <td>442241.0</td>
       <td>255379.0</td>
@@ -333,7 +218,7 @@ f_df.head()
     <tr>
       <th>4</th>
       <td>2001</td>
-      <td>May</td>
+      <td>5</td>
       <td>283056.0</td>
       <td>442241.0</td>
       <td>255379.0</td>
@@ -349,3 +234,125 @@ f_df.head()
 </table>
 </div>
 
+
+
+## Generate Training and Testing set
+
+
+```python
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, train_test_split
+from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
+from sklearn.tree import export_graphviz
+import pydot
+```
+
+
+```python
+# Convert pandas dataframe to numpy array
+feature_list = list(features_df.columns)
+features = np.array(features_df)
+labels = np.array(labels_df.drop(['year','month'], axis=1))
+# Split data into training and testing set with 25% of test set
+train_features, test_features, train_labels, test_labels = train_test_split(features, 
+                                                            labels, test_size=0.25, random_state=42)
+
+```
+
+# Create Random forest model
+
+
+```python
+# Create set of parameters to perform parameter optimization
+# n_estimators = [int(x) for x in np.linspace(10000, 50000, num=3)]
+n_estimators = [900]
+max_features = ['log2', 'sqrt', None]
+max_depth = [int(x) for x in np.linspace(1, 100, num = 5)]
+max_depth.append(None)
+min_samples_split = [2, 5, 10]
+min_samples_leaf = [1, 2, 4]
+bootstrap = [True, False]
+random_state = [int(x) for x in np.linspace(0, 50, num=5)]
+
+random_grid = {'n_estimators': n_estimators,
+               'max_features': max_features,
+               'max_depth': max_depth,
+               'min_samples_split': min_samples_split,
+               'min_samples_leaf': min_samples_leaf,
+               'bootstrap': bootstrap,
+               'random_state': random_state}
+
+print(random_grid)
+```
+
+    {'n_estimators': [900], 'max_features': ['log2', 'sqrt', None], 'max_depth': [1, 25, 50, 75, 100, None], 'min_samples_split': [2, 5, 10], 'min_samples_leaf': [1, 2, 4], 'bootstrap': [True, False], 'random_state': [0, 12, 25, 37, 50]}
+
+
+# Train model
+
+
+```python
+%timeit
+# Random search of parameters, using 3 fold cross validation, 
+rf = RandomForestRegressor()
+rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, 
+                            cv = 3, scoring = 'neg_mean_absolute_error', verbose=1, 
+                            random_state=42, n_jobs = -1)
+
+
+# Fit the random search model
+rf_random.fit(train_features, train_labels)
+rf_random.best_params_
+```
+
+    Fitting 3 folds for each of 100 candidates, totalling 300 fits
+
+
+
+
+
+    {'random_state': 50,
+     'n_estimators': 900,
+     'min_samples_split': 5,
+     'min_samples_leaf': 2,
+     'max_features': 'log2',
+     'max_depth': 75,
+     'bootstrap': True}
+
+
+
+
+```python
+best_model = rf_random.best_estimator_
+best_model.fit(train_features, train_labels)
+predictions = best_model.predict(test_features)
+```
+
+
+```python
+# Print evaluation metric
+print(f'Mean Absolute Error (MAE): {mean_absolute_error(test_labels, predictions)}')
+print(f'Mean Squared Error (MSE): {mean_squared_error(test_labels, predictions)}')
+print(f'Root Mean Squared Error (RMSE): {np.sqrt(mean_absolute_error(test_labels, predictions))}')
+print(f'Mean Absolute Percentage Error (MAPE): {mean_absolute_percentage_error(test_labels, predictions)}')
+```
+
+    Mean Absolute Error (MAE): 14946.331758365259
+    Mean Squared Error (MSE): 383561103.8205525
+    Root Mean Squared Error (RMSE): 122.2551911305416
+    Mean Absolute Percentage Error (MAPE): 0.06523886339257695
+
+
+# Show a tree in Random forest
+
+
+```python
+tree = best_model.estimators_[0]
+export_graphviz(tree, out_file = 'tree.dot', feature_names = feature_list, rounded = True, precision = 1)
+
+(graph, ) = pydot.graph_from_dot_file('tree.dot')
+graph.write_png('tree.png')
+
+```
+
+![](tree.png)
